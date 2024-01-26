@@ -41,8 +41,7 @@ async function notifyLiftingTvl() {
 }
 
 getLifted(notifyNewLifting);
-cron.schedule("0 */6 * * *", notifyLiftingTvl); // It runs every 6 hours
-//cron.schedule("* * * * *", notifyLiftingTvl); // It runs every minute
+cron.schedule(process.env.CRON_TVL, notifyLiftingTvl);
 
 // Keep the Node.js process running by waiting for a signal interruption (e.g., SIGINT from pressing CTRL+C)
 process.on("SIGINT", () => {
