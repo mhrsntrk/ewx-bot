@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "ethers": "5.4.0",
+    "node-cron": "^3.0.3",
+    "twitter-api-v2": "^1.16.0"
+  },
+  "name": "ewx-bot",
+  "version": "0.0.1",
+  "description": "A Twitter bot",
+  "main": "index.js",
+  "author": "mhrsntrk",
+  "license": "MIT"
+}
