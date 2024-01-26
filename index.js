@@ -4,6 +4,7 @@ const cron = require("node-cron");
 
 const { getLifted } = require("./lifting.js");
 const { twitterClient } = require("./config/twitter.js");
+const { sendTelegramMessage } = require("./config/telegram.js");
 const { checkLiftingTvl } = require("./tvl.js");
 
 function formatNumber(number) {
@@ -13,30 +14,35 @@ function formatNumber(number) {
   }).format(number);
 }
 
-const tweetNewLifting = async (eventData) => {
-  const tweetText = `🚀 ${eventData.amount} has been lifted from 🟣 EWC to 🔵 EWX!`;
+const notifyNewLifting = async (eventData) => {
+  const message = `${eventData.amount} has been lifted from 🟣 EWC to 🔵 EWX!`;
   try {
-    await twitterClient.v2.tweet(tweetText);
+    await twitterClient.v2.tweet(message);
     console.log("Tweet sent successfully!");
+    await sendTelegramMessage(message);
+    console.log("Telegram message sent successfully!");
   } catch (e) {
-    console.error("Failed to send tweet:", e);
+    console.error("Failed to send tweet or message:", e);
   }
 };
 
-async function tweetLiftingTvl() {
+async function notifyLiftingTvl() {
   try {
     const balanceEth = await checkLiftingTvl();
     const formattedBalanceEth = formatNumber(balanceEth);
-    const tweetText = `The total amount of ${formattedBalanceEth} EWT locked on 🔵 EWX!`;
-    await twitterClient.v2.tweet(tweetText);
+    const message = `Total amount of ${formattedBalanceEth} EWT locked on 🔵 EWX!`;
+    await twitterClient.v2.tweet(message);
     console.log("Tweet sent successfully!");
+    await sendTelegramMessage(message);
+    console.log("Telegram message sent successfully!");
   } catch (e) {
-    console.error("Failed to send tweet:", e);
+    console.error("Failed to send tweet or message:", e);
   }
 }
 
-getLifted(tweetNewLifting);
-cron.schedule("0 */6 * * *", tweetLiftingTvl); // It runs every 6 hours
+getLifted(notifyNewLifting);
+cron.schedule("0 */6 * * *", notifyLiftingTvl); // It runs every 6 hours
+//cron.schedule("* * * * *", notifyLiftingTvl); // It runs every minute
 
 // Keep the Node.js process running by waiting for a signal interruption (e.g., SIGINT from pressing CTRL+C)
 process.on("SIGINT", () => {
