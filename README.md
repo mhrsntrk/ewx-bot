@@ -70,4 +70,4 @@ caprover deploy
 
 ## Authors
 
-mhrsntrk [@mhrsntrk](https://github.com/mhrsntrk)
+mhrsntrk ([@mhrsntrk](https://github.com/mhrsntrk))
