@@ -3,7 +3,7 @@ require("dotenv").config();
 
 async function checkLiftingTvl() {
   const provider = new ethers.providers.JsonRpcProvider(
-    process.env.EWC_HTTP_RPC_URL,
+    process.env.EWC_RPC_URL,
   );
   const balance = await provider.getBalance(process.env.EWC_LIFTING_CONTRACT);
   const balanceEth = ethers.utils.formatEther(balance);

@@ -1,56 +1,43 @@
 const ethers = require("ethers");
-
 const ABI = require("./abi.json");
+const cron = require("node-cron");
 require("dotenv").config();
 
 async function getLifted(callback) {
-  let provider = new ethers.providers.WebSocketProvider(
-    process.env.EWC_WSS_RPC_URL,
+  const provider = new ethers.providers.JsonRpcProvider(
+    process.env.EWC_RPC_URL,
   );
 
-  let contract = new ethers.Contract(
+  const contract = new ethers.Contract(
     process.env.EWC_LIFTING_CONTRACT,
     ABI,
     provider,
   );
 
-  const handleLogLifted = (t1Address, amount) => {
-    const amountInEth = ethers.utils.formatEther(amount);
-    let liftingEvent = {
-      address: t1Address,
-      amount: amountInEth,
-    };
-    console.log(liftingEvent);
-    callback(liftingEvent);
-  };
+  let lastBlockChecked = await provider.getBlockNumber();
 
-  // Attach the event listener
-  contract.on("LogLifted", handleLogLifted);
-
-  // Reattach the event listener
-  const reattachEventListener = () => {
-    contract = new ethers.Contract(
-      process.env.EWC_LIFTING_CONTRACT,
-      ABI,
-      provider,
+  cron.schedule("*/10 * * * *", async () => {
+    // This cron job runs every 10 minutes
+    const currentBlock = await provider.getBlockNumber();
+    const filter = contract.filters.LogLifted();
+    const events = await contract.queryFilter(
+      filter,
+      lastBlockChecked + 1,
+      currentBlock,
     );
-    contract.on("LogLifted", handleLogLifted);
-    console.log("Event listener reattached.");
-  };
 
-  // Handle WebSocketProvider events to maintain the connection
-  provider._websocket.on("close", () => {
-    console.log("WebSocket connection closed. Attempting to reconnect...");
-    setTimeout(() => {
-      provider = new ethers.providers.WebSocketProvider(
-        process.env.EWC_WSS_RPC_URL,
-      );
-      provider._websocket.on("open", reattachEventListener);
-    }, 5000); // Reconnect after 5 seconds
-  });
-
-  provider._websocket.on("error", (err) => {
-    console.error("WebSocket error:", err);
+    if (events.length > 0) {
+      events.forEach((event) => {
+        const amountInEth = ethers.utils.formatEther(event.args.amount);
+        callback({
+          token: event.args.token,
+          t1Address: event.args.t1Address,
+          t2PublicKey: event.args.t2PublicKey,
+          amount: amountInEth,
+        });
+      });
+      lastBlockChecked = currentBlock; // Update the last checked block
+    }
   });
 }
 
