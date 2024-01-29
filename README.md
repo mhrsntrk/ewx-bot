@@ -40,7 +40,7 @@ Create a `.env` file (based on the `.env.example`) in the root directory of your
 To run the project locally, use:
 
 ```bash
-node index.js
+node --env-file=.env index.js
 ```
 
 ## Deploy Using Caprover
