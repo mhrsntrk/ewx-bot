@@ -15,7 +15,8 @@ function formatNumber(number) {
 }
 
 const notifyNewLifting = async (eventData) => {
-  const message = `${eventData.amount} has been lifted from 🟣 EWC to 🔵 EWX!`;
+  const formattedAmountEth = formatNumber(eventData.amount);
+  const message = `${formattedAmountEth} has been lifted from 🟣 EWC to 🔵 EWX!`;
   try {
     await twitterClient.v2.tweet(message);
     console.log("Tweet sent successfully!");
