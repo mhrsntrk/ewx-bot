@@ -29,14 +29,18 @@ async function getLifted(callback) {
     if (events.length > 0) {
       events.forEach((event) => {
         const amountInEth = ethers.utils.formatEther(event.args.amount);
-        // Check if the amount is greater than or equal to 1000 ETH
-        if (parseFloat(amountInEth) >= 1000) {
+        // Check if the amount is greater than or equal to 500 ETH
+        if (parseFloat(amountInEth) >= 500) {
           callback({
             token: event.args.token,
             t1Address: event.args.t1Address,
             t2PublicKey: event.args.t2PublicKey,
             amount: amountInEth,
           });
+        } else {
+          console.log(
+            `${amountInEth} has been lifted, but notification didn't fire because it is under the threshold.`,
+          );
         }
       });
       lastBlockChecked = currentBlock; // Update the last checked block
