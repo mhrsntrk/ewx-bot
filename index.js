@@ -31,7 +31,7 @@ async function notifyLiftingTvl() {
   try {
     const balanceEth = await checkLiftingTvl();
     const formattedBalanceEth = formatNumber(balanceEth);
-    const message = `Total amount of ${formattedBalanceEth} EWT locked on 🔵 EWX!`;
+    const message = `${formattedBalanceEth} EWT locked on 🔵 EWX!`;
     await twitterClient.v2.tweet(message);
     console.log("Tweet sent successfully!");
     await sendTelegramMessage(message);
