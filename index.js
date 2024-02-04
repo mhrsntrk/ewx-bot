@@ -16,7 +16,7 @@ function formatNumber(number) {
 
 const notifyNewLifting = async (eventData) => {
   const formattedAmountEth = formatNumber(eventData.amount);
-  const message = `${formattedAmountEth} has been lifted from 🟣 EWC to 🔵 EWX!`;
+  const message = `${formattedAmountEth} $EWT lifted from 🟣 EWC to 🔵 EWX`;
   try {
     await twitterClient.v2.tweet(message);
     console.log("Tweet sent successfully!");
@@ -31,7 +31,7 @@ async function notifyLiftingTvl() {
   try {
     const balanceEth = await checkLiftingTvl();
     const formattedBalanceEth = formatNumber(balanceEth);
-    const message = `${formattedBalanceEth} EWT locked on 🔵 EWX!`;
+    const message = `${formattedBalanceEth} $EWT locked on 🔵 EWX`;
     await twitterClient.v2.tweet(message);
     console.log("Tweet sent successfully!");
     await sendTelegramMessage(message);
