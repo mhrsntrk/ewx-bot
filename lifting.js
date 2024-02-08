@@ -16,8 +16,8 @@ async function getLifted(callback) {
 
   let lastBlockChecked = await provider.getBlockNumber();
 
-  cron.schedule("*/10 * * * *", async () => {
-    // This cron job runs every 10 minutes
+  cron.schedule("*/1 * * * *", async () => {
+    // This cron job runs every minutes
     const currentBlock = await provider.getBlockNumber();
     const filter = contract.filters.LogLifted();
     const events = await contract.queryFilter(
